@@ -1,0 +1,84 @@
+{
+  "name": "typr",
+  "version": "1.0.0",
+  "description": "A markdown note-taking application",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wait-on tcp:5173 && cross-env ELECTRON_START_URL=http://localhost:5173 electron .\"",
+    "build": "vite build && electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "build": {
+    "appId": "com.typr.app",
+    "productName": "Typr",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dir"
+    },
+    "win": {
+      "target": "dir"
+    },
+    "linux": {
+      "target": "dir"
+    },
+    "publish": null
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.17",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.17",
+    "vite": "^7.2.6",
+    "wait-on": "^9.0.3"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hello-pangea/dnd": "^18.0.1",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/extension-blockquote": "^3.13.0",
+    "@tiptap/extension-bold": "^3.13.0",
+    "@tiptap/extension-bullet-list": "^3.13.0",
+    "@tiptap/extension-code": "^3.13.0",
+    "@tiptap/extension-code-block": "^3.13.0",
+    "@tiptap/extension-document": "^3.13.0",
+    "@tiptap/extension-hard-break": "^3.13.0",
+    "@tiptap/extension-heading": "^3.13.0",
+    "@tiptap/extension-history": "^3.13.0",
+    "@tiptap/extension-horizontal-rule": "^3.13.0",
+    "@tiptap/extension-italic": "^3.13.0",
+    "@tiptap/extension-list-item": "^3.13.0",
+    "@tiptap/extension-ordered-list": "^3.13.0",
+    "@tiptap/extension-paragraph": "^3.13.0",
+    "@tiptap/extension-placeholder": "^3.13.0",
+    "@tiptap/extension-strike": "^3.13.0",
+    "@tiptap/extension-text": "^3.13.0",
+    "@tiptap/extension-typography": "^3.13.0",
+    "@tiptap/react": "^3.13.0",
+    "@tiptap/starter-kit": "^3.13.0",
+    "chokidar": "^5.0.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "fs-extra": "^11.3.2",
+    "lucide-react": "^0.556.0",
+    "marked": "^17.0.1",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "tailwind-merge": "^3.4.0",
+    "turndown": "^7.2.2"
+  }
+}
