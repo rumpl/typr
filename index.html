@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Typr</title>
+    <style>
+      /* Prevent flash of white - matches default Catppuccin Mocha theme */
+      html, body {
+        background-color: #1e1e2e;
+        color: #cdd6f4;
+      }
+    </style>
   </head>
-  <body
-    class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 overflow-hidden"
-  >
+  <body class="overflow-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

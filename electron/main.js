@@ -47,6 +47,42 @@ Start writing your notes here. You can:
 > Blockquote
 
 \`inline code\`
+
+## Task Lists
+
+- [ ] Learn Typr basics
+- [x] Install the app
+- [ ] Create my first note
+- [ ] Organize notes into folders
+
+## Code Blocks
+
+\`\`\`javascript
+function greet(name) {
+  console.log(\`Hello, \${name}!\`);
+  return true;
+}
+
+greet("World");
+\`\`\`
+
+\`\`\`python
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print(fibonacci(10))
+\`\`\`
+
+## Tables
+
+| Feature | Description | Status |
+| --- | --- | --- |
+| Task Lists | Checkable todo items | ✅ |
+| Syntax Highlighting | Colorful code blocks | ✅ |
+| Tables | Organize data in rows | ✅ |
+| Drag & Drop | Reorder your notes | ✅ |
 `;
     await fs.writeFile(
       path.join(NOTES_DIR, "Welcome.md"),
@@ -169,12 +205,19 @@ function createWindow() {
     width: 1200,
     height: 800,
     titleBarStyle: "hiddenInset",
+    show: false, // Don't show until ready
+    backgroundColor: "#1e1e2e", // Match default theme to prevent flash
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,
     },
+  });
+
+  // Show window only when content is ready to prevent flash of white
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
   });
 
   const startUrl =

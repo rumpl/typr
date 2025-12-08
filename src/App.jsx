@@ -252,14 +252,16 @@ function App() {
       />
 
       {/* Sidebar */}
-      {showSidebar && (
-        <aside
-          className="w-64 flex-shrink-0 border-r flex flex-col"
-          style={{
-            backgroundColor: "var(--bg-secondary)",
-            borderColor: "var(--border-primary)",
-          }}
-        >
+      <aside
+        className="flex-shrink-0 border-r overflow-hidden transition-all duration-300 ease-in-out"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          borderColor: showSidebar ? "var(--border-primary)" : "transparent",
+          width: showSidebar ? "16rem" : "0",
+          pointerEvents: showSidebar ? "auto" : "none",
+        }}
+      >
+        <div className="w-64 h-full flex flex-col">
           <div
             className="pt-8 pb-4 px-4 border-b flex justify-between items-center"
             style={{ borderColor: "var(--border-primary)", WebkitAppRegion: "drag" }}
@@ -329,12 +331,12 @@ function App() {
               Folder
             </button>
           </div>
-        </aside>
-      )}
+        </div>
+      </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
-        <div className="absolute top-10 left-4 z-10">
+        <div className="absolute top-10 left-4 z-10" style={{ WebkitAppRegion: "no-drag" }}>
           <button
             onClick={() => setShowSidebar(!showSidebar)}
             className="p-2 transition-colors"

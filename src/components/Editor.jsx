@@ -2,8 +2,16 @@ import React, { useMemo, useState, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import { Table, TableRow, TableCell, TableHeader } from "@tiptap/extension-table";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { common, createLowlight } from "lowlight";
 import { marked } from "marked";
 import TurndownService from "turndown";
+
+// Create lowlight instance with common languages
+const lowlight = createLowlight(common);
 
 // Calculate document statistics
 function getDocumentStats(text) {
@@ -73,6 +81,31 @@ function StatusBar({ editor }) {
   );
 }
 
+// Transform markdown to HTML with proper TipTap-compatible structure
+function markdownToHtml(markdown) {
+  // First, let marked parse the markdown
+  let html = marked.parse(markdown || "");
+  
+  // Transform task list items to TipTap format
+  // Marked outputs: <li><input type="checkbox"> text</li>
+  // TipTap expects: <li data-type="taskItem" data-checked="false"><label><input type="checkbox"></label><div>text</div></li>
+  html = html.replace(
+    /<li><input([^>]*?)>\s*([\s\S]*?)<\/li>/gi,
+    (match, attrs, content) => {
+      const isChecked = attrs.includes('checked');
+      return `<li data-type="taskItem" data-checked="${isChecked}"><label><input type="checkbox"${isChecked ? ' checked' : ''}></label><div>${content.trim()}</div></li>`;
+    }
+  );
+  
+  // Wrap consecutive taskItems in a taskList
+  html = html.replace(
+    /<ul>\s*((?:<li data-type="taskItem"[\s\S]*?<\/li>\s*)+)<\/ul>/gi,
+    (match, items) => `<ul data-type="taskList">${items}</ul>`
+  );
+  
+  return html;
+}
+
 const Editor = ({ content, onChange, editable = true }) => {
   const turndownService = useMemo(() => {
     const service = new TurndownService({
@@ -80,18 +113,126 @@ const Editor = ({ content, onChange, editable = true }) => {
       codeBlockStyle: "fenced",
       bulletListMarker: "-",
     });
+
+    // Add task list support to turndown
+    service.addRule("taskList", {
+      filter: (node) => {
+        return (
+          node.nodeName === "UL" &&
+          node.getAttribute("data-type") === "taskList"
+        );
+      },
+      replacement: (content) => {
+        return content + "\n";
+      },
+    });
+
+    service.addRule("taskListItem", {
+      filter: (node) => {
+        return (
+          node.nodeName === "LI" &&
+          node.getAttribute("data-type") === "taskItem"
+        );
+      },
+      replacement: (content, node) => {
+        const checked = node.getAttribute("data-checked") === "true";
+        const checkbox = checked ? "[x]" : "[ ]";
+        // Clean up the content - remove the checkbox that might be there
+        const cleanContent = content.replace(/^\s*\[[ x]\]\s*/i, "").trim();
+        return `- ${checkbox} ${cleanContent}\n`;
+      },
+    });
+
+    // Add table support to turndown
+    service.addRule("tableCell", {
+      filter: ["th", "td"],
+      replacement: (content, node) => {
+        return ` ${content.trim()} |`;
+      },
+    });
+
+    service.addRule("tableRow", {
+      filter: "tr",
+      replacement: (content, node) => {
+        const isHeaderRow = node.parentNode && node.parentNode.nodeName === "THEAD";
+        let row = "|" + content + "\n";
+        
+        if (isHeaderRow) {
+          const cells = node.querySelectorAll("th, td");
+          const separator = "|" + Array.from(cells).map(() => " --- ").join("|") + "|\n";
+          row += separator;
+        }
+        
+        return row;
+      },
+    });
+
+    service.addRule("table", {
+      filter: "table",
+      replacement: (content, node) => {
+        // Ensure there's a header row separator if no thead
+        const hasHeader = node.querySelector("thead");
+        if (!hasHeader) {
+          const firstRow = content.split("\n")[0];
+          if (firstRow) {
+            const cellCount = (firstRow.match(/\|/g) || []).length - 1;
+            const separator = "|" + Array(cellCount).fill(" --- ").join("|") + "|\n";
+            const rows = content.split("\n");
+            rows.splice(1, 0, separator.trim());
+            return "\n" + rows.join("\n") + "\n";
+          }
+        }
+        return "\n" + content + "\n";
+      },
+    });
+
+    // Handle code blocks with language
+    service.addRule("codeBlock", {
+      filter: (node) => {
+        return (
+          node.nodeName === "PRE" &&
+          node.querySelector("code")
+        );
+      },
+      replacement: (content, node) => {
+        const codeNode = node.querySelector("code");
+        const language = codeNode?.className?.match(/language-(\w+)/)?.[1] || "";
+        const code = codeNode?.textContent || content;
+        return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+      },
+    });
+
     return service;
   }, []);
 
   const initialHtml = useMemo(() => {
-    return marked.parse(content || "");
+    return markdownToHtml(content);
   }, []);
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false, // Disable default code block in favor of lowlight version
+      }),
       Placeholder.configure({
         placeholder: "Start writing...",
+      }),
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: "plaintext",
+        HTMLAttributes: {
+          class: "code-block",
+        },
       }),
     ],
     content: initialHtml,

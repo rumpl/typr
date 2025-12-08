@@ -190,3 +190,318 @@ body {
   opacity: 0.6;
 }
 
+/* ==================== */
+/* Task List Styles     */
+/* ==================== */
+
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+  margin: 1rem 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 0.25rem;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  margin-top: 0.35rem;
+}
+
+/* Hide the empty span inside label */
+.ProseMirror ul[data-type="taskList"] li > label > span {
+  display: none;
+}
+
+.ProseMirror ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Remove default paragraph margin inside task items */
+.ProseMirror ul[data-type="taskList"] li > div > p {
+  margin: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--text-muted);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  position: relative;
+  background-color: transparent;
+  transition: all 0.15s ease;
+  display: block;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] input[type="checkbox"]:hover {
+  border-color: var(--accent-primary);
+}
+
+.ProseMirror ul[data-type="taskList"] input[type="checkbox"]:checked {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.ProseMirror ul[data-type="taskList"] input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 7px;
+  border: solid var(--text-inverse);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.ProseMirror ul[data-type="taskList"] li[data-checked="true"] > div {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Nested task lists */
+.ProseMirror ul[data-type="taskList"] ul[data-type="taskList"] {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+/* ==================== */
+/* Table Styles         */
+/* ==================== */
+
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-secondary);
+}
+
+.ProseMirror table th,
+.ProseMirror table td {
+  border: 1px solid var(--border-secondary);
+  padding: 0.75rem 1rem;
+  position: relative;
+  text-align: left;
+  vertical-align: top;
+  min-width: 100px;
+}
+
+.ProseMirror table th {
+  background-color: var(--bg-tertiary);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ProseMirror table td {
+  background-color: var(--bg-primary);
+}
+
+.ProseMirror table tr:hover td {
+  background-color: var(--bg-hover);
+}
+
+/* Selected cell */
+.ProseMirror table .selectedCell {
+  background-color: var(--bg-hover) !important;
+}
+
+.ProseMirror table .selectedCell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 2px solid var(--accent-primary);
+}
+
+/* Column resize handle */
+.ProseMirror table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--accent-primary);
+  cursor: col-resize;
+  z-index: 10;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: col-resize;
+}
+
+/* ==================== */
+/* Code Block Styles    */
+/* ==================== */
+
+.ProseMirror pre {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--text-primary);
+}
+
+/* Inline code */
+.ProseMirror code {
+  background-color: var(--bg-tertiary);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 0.875em;
+  color: var(--accent-primary);
+}
+
+/* ==================== */
+/* Syntax Highlighting  */
+/* (Catppuccin-inspired)*/
+/* ==================== */
+
+.ProseMirror pre code .hljs-comment,
+.ProseMirror pre code .hljs-quote {
+  color: #6c7086;
+  font-style: italic;
+}
+
+.ProseMirror pre code .hljs-keyword,
+.ProseMirror pre code .hljs-selector-tag,
+.ProseMirror pre code .hljs-addition {
+  color: #cba6f7;
+}
+
+.ProseMirror pre code .hljs-number,
+.ProseMirror pre code .hljs-string,
+.ProseMirror pre code .hljs-meta .hljs-meta-string,
+.ProseMirror pre code .hljs-literal,
+.ProseMirror pre code .hljs-doctag,
+.ProseMirror pre code .hljs-regexp {
+  color: #a6e3a1;
+}
+
+.ProseMirror pre code .hljs-title,
+.ProseMirror pre code .hljs-section,
+.ProseMirror pre code .hljs-name,
+.ProseMirror pre code .hljs-selector-id,
+.ProseMirror pre code .hljs-selector-class {
+  color: #89b4fa;
+}
+
+.ProseMirror pre code .hljs-attribute,
+.ProseMirror pre code .hljs-attr,
+.ProseMirror pre code .hljs-variable,
+.ProseMirror pre code .hljs-template-variable,
+.ProseMirror pre code .hljs-class .hljs-title,
+.ProseMirror pre code .hljs-type {
+  color: #f9e2af;
+}
+
+.ProseMirror pre code .hljs-symbol,
+.ProseMirror pre code .hljs-bullet,
+.ProseMirror pre code .hljs-subst,
+.ProseMirror pre code .hljs-meta,
+.ProseMirror pre code .hljs-meta .hljs-keyword,
+.ProseMirror pre code .hljs-selector-attr,
+.ProseMirror pre code .hljs-selector-pseudo,
+.ProseMirror pre code .hljs-link {
+  color: #fab387;
+}
+
+.ProseMirror pre code .hljs-built_in,
+.ProseMirror pre code .hljs-deletion {
+  color: #f38ba8;
+}
+
+.ProseMirror pre code .hljs-formula {
+  color: #f5c2e7;
+}
+
+.ProseMirror pre code .hljs-emphasis {
+  font-style: italic;
+}
+
+.ProseMirror pre code .hljs-strong {
+  font-weight: bold;
+}
+
+/* Light theme overrides for syntax highlighting */
+:root:not(.dark) .ProseMirror pre code .hljs-comment,
+:root:not(.dark) .ProseMirror pre code .hljs-quote {
+  color: #8c8fa1;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-keyword,
+:root:not(.dark) .ProseMirror pre code .hljs-selector-tag,
+:root:not(.dark) .ProseMirror pre code .hljs-addition {
+  color: #8839ef;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-number,
+:root:not(.dark) .ProseMirror pre code .hljs-string,
+:root:not(.dark) .ProseMirror pre code .hljs-literal,
+:root:not(.dark) .ProseMirror pre code .hljs-doctag,
+:root:not(.dark) .ProseMirror pre code .hljs-regexp {
+  color: #40a02b;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-title,
+:root:not(.dark) .ProseMirror pre code .hljs-section,
+:root:not(.dark) .ProseMirror pre code .hljs-name,
+:root:not(.dark) .ProseMirror pre code .hljs-selector-id,
+:root:not(.dark) .ProseMirror pre code .hljs-selector-class {
+  color: #1e66f5;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-attribute,
+:root:not(.dark) .ProseMirror pre code .hljs-attr,
+:root:not(.dark) .ProseMirror pre code .hljs-variable,
+:root:not(.dark) .ProseMirror pre code .hljs-template-variable,
+:root:not(.dark) .ProseMirror pre code .hljs-class .hljs-title,
+:root:not(.dark) .ProseMirror pre code .hljs-type {
+  color: #df8e1d;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-symbol,
+:root:not(.dark) .ProseMirror pre code .hljs-bullet,
+:root:not(.dark) .ProseMirror pre code .hljs-subst,
+:root:not(.dark) .ProseMirror pre code .hljs-meta,
+:root:not(.dark) .ProseMirror pre code .hljs-selector-attr,
+:root:not(.dark) .ProseMirror pre code .hljs-selector-pseudo,
+:root:not(.dark) .ProseMirror pre code .hljs-link {
+  color: #fe640b;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-built_in,
+:root:not(.dark) .ProseMirror pre code .hljs-deletion {
+  color: #d20f39;
+}
+
+:root:not(.dark) .ProseMirror pre code .hljs-formula {
+  color: #ea76cb;
+}
+
