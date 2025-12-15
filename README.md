@@ -1,7 +1,7 @@
 # typr
 
 <p align="center">
-  <img src="./build/icon.png" alt="icon">
+  <img src="./build/icon.png" alt="icon" width="400">
 </p>
 
 Beautiful markdown editor.
