@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, nativeImage } = require("electron");
 const path = require("path");
 const fs = require("fs-extra");
 const os = require("os");
@@ -87,7 +87,7 @@ print(fibonacci(10))
     await fs.writeFile(
       path.join(NOTES_DIR, "Welcome.md"),
       welcomeContent,
-      "utf-8"
+      "utf-8",
     );
   }
 }
@@ -171,7 +171,7 @@ function applyOrdering(items, order) {
       if (item.children) {
         item.children = applyOrdering(
           item.children,
-          order.filter((o) => o.startsWith(item.id + "/"))
+          order.filter((o) => o.startsWith(item.id + "/")),
         );
       }
       ordered.push(item);
@@ -201,12 +201,20 @@ function flattenTree(items, result = []) {
 }
 
 function createWindow() {
+  // Set window icon for Windows/Linux
+  let windowIcon;
+  const iconPath = path.join(__dirname, "../build/icon.png");
+  if (fs.pathExistsSync(iconPath)) {
+    windowIcon = nativeImage.createFromPath(iconPath);
+  }
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     titleBarStyle: "hiddenInset",
     show: false, // Don't show until ready
     backgroundColor: "#1e1e2e", // Match default theme to prevent flash
+    icon: windowIcon,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
@@ -232,6 +240,16 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   await ensureNotesDir();
+
+  // Set dock icon on macOS
+  if (process.platform === "darwin") {
+    const iconPath = path.join(__dirname, "../build/icon.png");
+    if (fs.pathExistsSync(iconPath)) {
+      const icon = nativeImage.createFromPath(iconPath);
+      app.dock.setIcon(icon);
+    }
+  }
+
   createWindow();
 
   // Watch for file changes recursively

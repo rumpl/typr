@@ -1,5 +1,9 @@
 # typr
 
+<p align="center">
+  <img src="./build/icon.png" alt="icon">
+</p>
+
 Beautiful markdown editor.
 
 I made this just for me, there are plenty of other markdown editors, I'm pretty sure others would be better for you and will have less bugs.

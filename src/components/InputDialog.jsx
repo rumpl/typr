@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X } from "lucide-react";
 
-export default function InputDialog({ isOpen, onClose, onSubmit, title, placeholder }) {
+export default function InputDialog({
+  isOpen,
+  onClose,
+  onSubmit,
+  title,
+  placeholder,
+}) {
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
 
@@ -32,10 +38,7 @@ export default function InputDialog({ isOpen, onClose, onSubmit, title, placehol
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Dialog */}
       <div
@@ -53,8 +56,12 @@ export default function InputDialog({ isOpen, onClose, onSubmit, title, placehol
             onClick={onClose}
             className="p-1 rounded"
             style={{ color: "var(--text-muted)" }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "var(--bg-hover)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
             <X size={18} />
           </button>
@@ -84,8 +91,12 @@ export default function InputDialog({ isOpen, onClose, onSubmit, title, placehol
               onClick={onClose}
               className="px-4 py-2 text-sm rounded-md"
               style={{ color: "var(--text-secondary)" }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "var(--bg-hover)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
             >
               Cancel
             </button>
@@ -106,4 +117,3 @@ export default function InputDialog({ isOpen, onClose, onSubmit, title, placehol
     </div>
   );
 }
-

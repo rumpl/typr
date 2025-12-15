@@ -187,14 +187,16 @@ function SortableTreeItem({
         backgroundColor: isActive
           ? "var(--bg-tertiary)"
           : isDragTarget && isFolder
-          ? "var(--bg-tertiary)"
-          : "transparent",
+            ? "var(--bg-tertiary)"
+            : "transparent",
         color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
         fontWeight: isActive ? 500 : 400,
-        boxShadow: isDragTarget && isFolder ? "0 0 0 2px var(--accent-primary)" : "none",
+        boxShadow:
+          isDragTarget && isFolder ? "0 0 0 2px var(--accent-primary)" : "none",
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+        if (!isActive)
+          e.currentTarget.style.backgroundColor = "var(--bg-hover)";
       }}
       onMouseLeave={(e) => {
         if (!isActive && !(isDragTarget && isFolder)) {
@@ -220,9 +222,17 @@ function SortableTreeItem({
 
       {isFolder ? (
         isExpanded ? (
-          <FolderOpen size={16} className="flex-shrink-0" style={{ color: "var(--accent-folder)" }} />
+          <FolderOpen
+            size={16}
+            className="flex-shrink-0"
+            style={{ color: "var(--accent-folder)" }}
+          />
         ) : (
-          <Folder size={16} className="flex-shrink-0" style={{ color: "var(--accent-folder)" }} />
+          <Folder
+            size={16}
+            className="flex-shrink-0"
+            style={{ color: "var(--accent-folder)" }}
+          />
         )
       ) : (
         <FileText size={16} className="flex-shrink-0 opacity-70" />
@@ -246,8 +256,12 @@ function SortableTreeItem({
             className="p-1 rounded"
             title="Rename"
             style={{ color: "var(--text-muted)" }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.backgroundColor = "var(--bg-hover)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.backgroundColor = "transparent")
+            }
           >
             <Pencil size={12} />
           </button>
@@ -258,8 +272,12 @@ function SortableTreeItem({
                 className="p-1 rounded"
                 title="New note in folder"
                 style={{ color: "var(--text-muted)" }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "var(--bg-hover)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
               >
                 <Plus size={12} />
               </button>
@@ -268,8 +286,12 @@ function SortableTreeItem({
                 className="p-1 rounded"
                 title="New subfolder"
                 style={{ color: "var(--text-muted)" }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "var(--bg-hover)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
               >
                 <FolderPlus size={12} />
               </button>
@@ -417,7 +439,7 @@ export default function TreeSidebar({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Find item in tree by id
@@ -459,7 +481,10 @@ export default function TreeSidebar({
     const overItem = findItem(tree, over.id);
     if (overItem?.type === "folder" && overItem.id !== activeItem?.id) {
       // Don't allow dropping a folder into itself
-      if (activeItem?.type === "folder" && overItem.id.startsWith(activeItem.id + "/")) {
+      if (
+        activeItem?.type === "folder" &&
+        overItem.id.startsWith(activeItem.id + "/")
+      ) {
         setDragOverFolderId(null);
         return;
       }
@@ -472,7 +497,7 @@ export default function TreeSidebar({
   const handleDragEnd = (event) => {
     const { active, over } = event;
     const targetFolderId = dragOverFolderId;
-    
+
     setActiveItem(null);
     setDragOverFolderId(null);
 
@@ -486,7 +511,10 @@ export default function TreeSidebar({
     // If we have a target folder highlighted, move into it
     if (targetFolderId && overItem.type === "folder") {
       // Check we're not moving a folder into itself
-      if (draggedItem.type === "folder" && targetFolderId.startsWith(draggedItem.id)) {
+      if (
+        draggedItem.type === "folder" &&
+        targetFolderId.startsWith(draggedItem.id)
+      ) {
         return;
       }
       onMove(draggedItem.path, overItem.path);
@@ -500,7 +528,7 @@ export default function TreeSidebar({
     // Same parent - reorder
     if (
       (activeParent === null && overParent === null) ||
-      (activeParent?.id === overParent?.id)
+      activeParent?.id === overParent?.id
     ) {
       onReorder(active.id, over.id);
     } else {

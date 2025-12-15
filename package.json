@@ -5,7 +5,8 @@
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on tcp:5173 && cross-env ELECTRON_START_URL=http://localhost:5173 electron .\"",
-    "build": "vite build && electron-builder"
+    "build": "vite build && electron-builder",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -14,7 +15,8 @@
     "appId": "com.typr.app",
     "productName": "Typr",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
@@ -22,13 +24,16 @@
     ],
     "mac": {
       "category": "public.app-category.productivity",
-      "target": "dir"
+      "target": "dir",
+      "icon": "build/icon.icns"
     },
     "win": {
-      "target": "dir"
+      "target": "dir",
+      "icon": "build/icon.ico"
     },
     "linux": {
-      "target": "dir"
+      "target": "dir",
+      "icon": "build/icon.png"
     },
     "publish": null
   },
@@ -40,6 +45,7 @@
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
     "postcss": "^8.5.6",
+    "prettier": "^3.7.4",
     "tailwindcss": "^3.4.17",
     "vite": "^7.2.7",
     "wait-on": "^9.0.3"

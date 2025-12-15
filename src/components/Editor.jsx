@@ -4,7 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import { Table, TableRow, TableCell, TableHeader } from "@tiptap/extension-table";
+import { TableKit } from "@tiptap/extension-table";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
 import { marked } from "marked";
@@ -16,33 +16,59 @@ const lowlight = createLowlight(common);
 // Calculate document statistics
 function getDocumentStats(text) {
   if (!text || text.trim() === "") {
-    return { words: 0, characters: 0, charactersNoSpaces: 0, sentences: 0, paragraphs: 0, readingTime: 0 };
+    return {
+      words: 0,
+      characters: 0,
+      charactersNoSpaces: 0,
+      sentences: 0,
+      paragraphs: 0,
+      readingTime: 0,
+    };
   }
 
   const trimmedText = text.trim();
-  
+
   // Word count - split by whitespace and filter empty strings
-  const words = trimmedText.split(/\s+/).filter(word => word.length > 0).length;
-  
+  const words = trimmedText
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
+
   // Character counts
   const characters = trimmedText.length;
   const charactersNoSpaces = trimmedText.replace(/\s/g, "").length;
-  
+
   // Sentence count - split by sentence-ending punctuation
-  const sentences = trimmedText.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
-  
+  const sentences = trimmedText
+    .split(/[.!?]+/)
+    .filter((s) => s.trim().length > 0).length;
+
   // Paragraph count - split by double newlines or count non-empty blocks
-  const paragraphs = trimmedText.split(/\n\s*\n/).filter(p => p.trim().length > 0).length || 1;
-  
+  const paragraphs =
+    trimmedText.split(/\n\s*\n/).filter((p) => p.trim().length > 0).length || 1;
+
   // Reading time (average 200 words per minute)
   const readingTime = Math.ceil(words / 200);
 
-  return { words, characters, charactersNoSpaces, sentences, paragraphs, readingTime };
+  return {
+    words,
+    characters,
+    charactersNoSpaces,
+    sentences,
+    paragraphs,
+    readingTime,
+  };
 }
 
 // Status bar component
 function StatusBar({ editor }) {
-  const [stats, setStats] = useState({ words: 0, characters: 0, charactersNoSpaces: 0, sentences: 0, paragraphs: 0, readingTime: 0 });
+  const [stats, setStats] = useState({
+    words: 0,
+    characters: 0,
+    charactersNoSpaces: 0,
+    sentences: 0,
+    paragraphs: 0,
+    readingTime: 0,
+  });
 
   useEffect(() => {
     if (!editor) return;
@@ -72,10 +98,18 @@ function StatusBar({ editor }) {
         backgroundColor: "var(--bg-primary)",
       }}
     >
-      <span>{stats.words} {stats.words === 1 ? "word" : "words"}</span>
-      <span>{stats.characters} {stats.characters === 1 ? "character" : "characters"}</span>
-      <span>{stats.sentences} {stats.sentences === 1 ? "sentence" : "sentences"}</span>
-      <span>{stats.paragraphs} {stats.paragraphs === 1 ? "paragraph" : "paragraphs"}</span>
+      <span>
+        {stats.words} {stats.words === 1 ? "word" : "words"}
+      </span>
+      <span>
+        {stats.characters} {stats.characters === 1 ? "character" : "characters"}
+      </span>
+      <span>
+        {stats.sentences} {stats.sentences === 1 ? "sentence" : "sentences"}
+      </span>
+      <span>
+        {stats.paragraphs} {stats.paragraphs === 1 ? "paragraph" : "paragraphs"}
+      </span>
       <span>{stats.readingTime} min read</span>
     </div>
   );
@@ -85,24 +119,24 @@ function StatusBar({ editor }) {
 function markdownToHtml(markdown) {
   // First, let marked parse the markdown
   let html = marked.parse(markdown || "");
-  
+
   // Transform task list items to TipTap format
   // Marked outputs: <li><input type="checkbox"> text</li>
   // TipTap expects: <li data-type="taskItem" data-checked="false"><label><input type="checkbox"></label><div>text</div></li>
   html = html.replace(
     /<li><input([^>]*?)>\s*([\s\S]*?)<\/li>/gi,
     (match, attrs, content) => {
-      const isChecked = attrs.includes('checked');
-      return `<li data-type="taskItem" data-checked="${isChecked}"><label><input type="checkbox"${isChecked ? ' checked' : ''}></label><div>${content.trim()}</div></li>`;
-    }
+      const isChecked = attrs.includes("checked");
+      return `<li data-type="taskItem" data-checked="${isChecked}"><label><input type="checkbox"${isChecked ? " checked" : ""}></label><div>${content.trim()}</div></li>`;
+    },
   );
-  
+
   // Wrap consecutive taskItems in a taskList
   html = html.replace(
     /<ul>\s*((?:<li data-type="taskItem"[\s\S]*?<\/li>\s*)+)<\/ul>/gi,
-    (match, items) => `<ul data-type="taskList">${items}</ul>`
+    (match, items) => `<ul data-type="taskList">${items}</ul>`,
   );
-  
+
   return html;
 }
 
@@ -114,6 +148,68 @@ const Editor = ({ content, onChange, editable = true }) => {
       bulletListMarker: "-",
     });
 
+    // Prevent escaping of square brackets (needed for task lists)
+    service.escape = (string) => {
+      return string
+        .replace(/\\/, "\\\\")
+        .replace(/\*/g, "\\*")
+        .replace(/^-/g, "\\-")
+        .replace(/^\+ /g, "\\+ ")
+        .replace(/^(=+)/g, "\\$1")
+        .replace(/^(#{1,6}) /g, "\\$1 ")
+        .replace(/`/g, "\\`")
+        .replace(/^~~~/g, "\\~~~")
+        .replace(/^>/g, "\\>")
+        .replace(/_/g, "\\_")
+        .replace(/^(\d+)\. /g, "$1\\. ");
+    };
+
+    // Override default list item rule to prevent extra newlines (exclude task items)
+    service.addRule("listItem", {
+      filter: (node) => {
+        return (
+          node.nodeName === "LI" &&
+          node.getAttribute("data-type") !== "taskItem"
+        );
+      },
+      replacement: (content, node, options) => {
+        content = content
+          .replace(/^\n+/, "") // Remove leading newlines
+          .replace(/\n+$/, "\n") // Replace trailing newlines with single newline
+          .replace(/\n/gm, "\n    "); // Indent nested content
+
+        let prefix = options.bulletListMarker + " ";
+        const parent = node.parentNode;
+        if (parent.nodeName === "OL") {
+          const start = parent.getAttribute("start");
+          const index = Array.prototype.indexOf.call(parent.children, node);
+          prefix = (start ? Number(start) + index : index + 1) + ". ";
+        }
+        return prefix + content.trim() + "\n";
+      },
+    });
+
+    // Override bullet list to not add extra spacing
+    service.addRule("bulletList", {
+      filter: (node) => {
+        return (
+          node.nodeName === "UL" &&
+          node.getAttribute("data-type") !== "taskList"
+        );
+      },
+      replacement: (content, node) => {
+        return "\n" + content + "\n";
+      },
+    });
+
+    // Override ordered list to not add extra spacing
+    service.addRule("orderedList", {
+      filter: "ol",
+      replacement: (content, node) => {
+        return "\n" + content + "\n";
+      },
+    });
+
     // Add task list support to turndown
     service.addRule("taskList", {
       filter: (node) => {
@@ -123,7 +219,7 @@ const Editor = ({ content, onChange, editable = true }) => {
         );
       },
       replacement: (content) => {
-        return content + "\n";
+        return "\n" + content + "\n";
       },
     });
 
@@ -139,7 +235,7 @@ const Editor = ({ content, onChange, editable = true }) => {
         const checkbox = checked ? "[x]" : "[ ]";
         // Clean up the content - remove the checkbox that might be there
         const cleanContent = content.replace(/^\s*\[[ x]\]\s*/i, "").trim();
-        return `- ${checkbox} ${cleanContent}\n`;
+        return "- " + checkbox + " " + cleanContent + "\n";
       },
     });
 
@@ -154,15 +250,21 @@ const Editor = ({ content, onChange, editable = true }) => {
     service.addRule("tableRow", {
       filter: "tr",
       replacement: (content, node) => {
-        const isHeaderRow = node.parentNode && node.parentNode.nodeName === "THEAD";
+        const isHeaderRow =
+          node.parentNode && node.parentNode.nodeName === "THEAD";
         let row = "|" + content + "\n";
-        
+
         if (isHeaderRow) {
           const cells = node.querySelectorAll("th, td");
-          const separator = "|" + Array.from(cells).map(() => " --- ").join("|") + "|\n";
+          const separator =
+            "|" +
+            Array.from(cells)
+              .map(() => " --- ")
+              .join("|") +
+            "|\n";
           row += separator;
         }
-        
+
         return row;
       },
     });
@@ -176,7 +278,8 @@ const Editor = ({ content, onChange, editable = true }) => {
           const firstRow = content.split("\n")[0];
           if (firstRow) {
             const cellCount = (firstRow.match(/\|/g) || []).length - 1;
-            const separator = "|" + Array(cellCount).fill(" --- ").join("|") + "|\n";
+            const separator =
+              "|" + Array(cellCount).fill(" --- ").join("|") + "|\n";
             const rows = content.split("\n");
             rows.splice(1, 0, separator.trim());
             return "\n" + rows.join("\n") + "\n";
@@ -189,14 +292,12 @@ const Editor = ({ content, onChange, editable = true }) => {
     // Handle code blocks with language
     service.addRule("codeBlock", {
       filter: (node) => {
-        return (
-          node.nodeName === "PRE" &&
-          node.querySelector("code")
-        );
+        return node.nodeName === "PRE" && node.querySelector("code");
       },
       replacement: (content, node) => {
         const codeNode = node.querySelector("code");
-        const language = codeNode?.className?.match(/language-(\w+)/)?.[1] || "";
+        const language =
+          codeNode?.className?.match(/language-(\w+)/)?.[1] || "";
         const code = codeNode?.textContent || content;
         return `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
       },
@@ -211,6 +312,7 @@ const Editor = ({ content, onChange, editable = true }) => {
 
   const editor = useEditor({
     extensions: [
+      TableKit,
       StarterKit.configure({
         codeBlock: false, // Disable default code block in favor of lowlight version
       }),
@@ -221,12 +323,6 @@ const Editor = ({ content, onChange, editable = true }) => {
       TaskItem.configure({
         nested: true,
       }),
-      Table.configure({
-        resizable: true,
-      }),
-      TableRow,
-      TableHeader,
-      TableCell,
       CodeBlockLowlight.configure({
         lowlight,
         defaultLanguage: "plaintext",
@@ -239,8 +335,7 @@ const Editor = ({ content, onChange, editable = true }) => {
     editable: editable,
     editorProps: {
       attributes: {
-        class:
-          "prose prose-lg dark:prose-invert max-w-none focus:outline-none",
+        class: "prose prose-lg dark:prose-invert max-w-none focus:outline-none",
       },
     },
     onUpdate: ({ editor }) => {

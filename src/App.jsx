@@ -95,7 +95,7 @@ function App() {
     try {
       const newPath = await window.electronAPI.createFolder(
         parentPath,
-        folderName
+        folderName,
       );
       // Expand the parent folder if creating inside one
       if (parentPath) {
@@ -165,7 +165,10 @@ function App() {
 
   const handleMove = async (itemPath, newParentPath) => {
     try {
-      const newPath = await window.electronAPI.moveItem(itemPath, newParentPath);
+      const newPath = await window.electronAPI.moveItem(
+        itemPath,
+        newParentPath,
+      );
 
       // Update active note path if it was moved
       if (activeNoteId === itemPath) {
@@ -222,7 +225,10 @@ function App() {
     return (
       <div
         className="h-screen w-full flex items-center justify-center"
-        style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-muted)" }}
+        style={{
+          backgroundColor: "var(--bg-primary)",
+          color: "var(--text-muted)",
+        }}
       >
         <Loader2 className="animate-spin w-8 h-8" />
       </div>
@@ -232,7 +238,10 @@ function App() {
   return (
     <div
       className="h-screen w-full flex overflow-hidden"
-      style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
+      style={{
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
+      }}
     >
       {/* Settings Modal */}
       <Settings
@@ -264,7 +273,10 @@ function App() {
         <div className="w-64 h-full flex flex-col">
           <div
             className="pt-8 pb-4 px-4 border-b flex justify-between items-center"
-            style={{ borderColor: "var(--border-primary)", WebkitAppRegion: "drag" }}
+            style={{
+              borderColor: "var(--border-primary)",
+              WebkitAppRegion: "drag",
+            }}
           >
             <span
               className="font-semibold text-sm uppercase tracking-wider"
@@ -272,16 +284,17 @@ function App() {
             >
               Notes
             </span>
-            <div
-              className="flex gap-2"
-              style={{ WebkitAppRegion: "no-drag" }}
-            >
+            <div className="flex gap-2" style={{ WebkitAppRegion: "no-drag" }}>
               <button
                 onClick={() => setSettingsOpen(true)}
                 className="p-1 rounded transition-colors"
                 style={{ color: "var(--text-muted)" }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = "var(--bg-hover)"}
-                onMouseLeave={(e) => e.target.style.backgroundColor = "transparent"}
+                onMouseEnter={(e) =>
+                  (e.target.style.backgroundColor = "var(--bg-hover)")
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.backgroundColor = "transparent")
+                }
               >
                 <SettingsIcon size={16} />
               </button>
@@ -336,7 +349,10 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
-        <div className="absolute top-10 left-4 z-10" style={{ WebkitAppRegion: "no-drag" }}>
+        <div
+          className="absolute top-10 left-4 z-10"
+          style={{ WebkitAppRegion: "no-drag" }}
+        >
           <button
             onClick={() => setShowSidebar(!showSidebar)}
             className="p-2 transition-colors"

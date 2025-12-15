@@ -28,7 +28,7 @@ const themePreviewColors = {
 
 function ThemeCard({ theme, isSelected, onSelect }) {
   const preview = themePreviewColors[theme.id];
-  
+
   return (
     <div
       onClick={() => onSelect(theme.id)}
@@ -58,7 +58,7 @@ function ThemeCard({ theme, isSelected, onSelect }) {
           />
         </div>
       </div>
-      
+
       {/* Theme info */}
       <div className="flex items-center justify-between">
         <div>
@@ -80,9 +80,14 @@ function ThemeCard({ theme, isSelected, onSelect }) {
   );
 }
 
-export default function Settings({ isOpen, onClose, currentTheme, onThemeChange }) {
+export default function Settings({
+  isOpen,
+  onClose,
+  currentTheme,
+  onThemeChange,
+}) {
   if (!isOpen) return null;
-  
+
   const handleThemeSelect = async (themeId) => {
     onThemeChange(themeId);
     try {
@@ -91,15 +96,12 @@ export default function Settings({ isOpen, onClose, currentTheme, onThemeChange 
       console.error("Failed to save theme:", err);
     }
   };
-  
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
-      
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+
       {/* Modal */}
       <div
         className="relative w-full max-w-lg mx-4 rounded-lg shadow-xl"
@@ -118,13 +120,13 @@ export default function Settings({ isOpen, onClose, currentTheme, onThemeChange 
             <X size={20} className="text-theme-muted" />
           </button>
         </div>
-        
+
         {/* Content */}
         <div className="px-6 py-4">
           <h3 className="text-sm font-medium text-theme-secondary uppercase tracking-wider mb-4">
             Theme
           </h3>
-          
+
           <div className="grid grid-cols-2 gap-3">
             {themeList.map((theme) => (
               <ThemeCard
@@ -136,7 +138,7 @@ export default function Settings({ isOpen, onClose, currentTheme, onThemeChange 
             ))}
           </div>
         </div>
-        
+
         {/* Footer */}
         <div
           className="px-6 py-4 border-t"
@@ -149,8 +151,12 @@ export default function Settings({ isOpen, onClose, currentTheme, onThemeChange 
               backgroundColor: "var(--bg-tertiary)",
               color: "var(--text-primary)",
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "var(--bg-hover)"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "var(--bg-tertiary)"}
+            onMouseEnter={(e) =>
+              (e.target.style.backgroundColor = "var(--bg-hover)")
+            }
+            onMouseLeave={(e) =>
+              (e.target.style.backgroundColor = "var(--bg-tertiary)")
+            }
           >
             Done
           </button>
